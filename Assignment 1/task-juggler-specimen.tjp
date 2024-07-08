@@ -1,0 +1,651 @@
+project iRise "Project iRise"  2024-04-01 +1y {
+  timezone "Asia/Karachi"
+  timeformat "%Y-%m-%d"
+  numberformat "-" "" "," "." 1
+  currencyformat "(" ")" "," "." 0
+  now 2024-04-01
+  currency "USD"
+}
+
+# You can attach flags to accounts, resources and tasks. These can be
+# used to filter out subsets of them during reporting.
+flags important, hidden
+
+# If you want to do budget planning for your project, you need to
+# define some accounts.
+account cost "Project Cost" {
+  account dev "Development"
+  account doc "Documentation"
+}
+account rev "Customer Payments"
+
+# The Profit & Loss analysis should be rev - cost accounts.
+balance cost rev
+
+# Define your public holidays here.
+vacation "New Year's Day" 2024-01-01
+vacation "Independence Day" 2024-08-14
+vacation "Labor Day" 2024-05-01
+vacation "Christmas Day" 2024-12-25
+vacation "Boxing Day" 2024-12-26
+
+rate 50.0
+
+# This is a set of example resources.
+resource boss "Dr. Omar Khan"
+resource dboss "Mr. Abdul Basir" {
+	managers boss
+} 
+
+resource t1 "Developer Team 1" {
+  managers dboss
+  resource t1dev1 "Developer 1"
+  resource t1dev2 "Developer 2"
+}
+resource t2 "Developer Team 2" {
+  managers dboss
+  resource t2dev1 "Developer 3"
+  resource t2dev2 "Developer 4"
+}
+
+# This is a resource that does not do any work.
+resource s1 "System 1" {
+  efficiency 0.0
+  rate 600.0
+}
+
+task project "Project" {
+	
+	chargeset dev
+	charge 5 perday
+	responsible boss
+
+	task wp0 "Analysis & Design" {
+		priority 1000
+		task w0t1 "Misc Design Components" {
+			effort 30d
+			allocate t1dev1, t1dev2
+		}
+		task w0t2 "Backend Schemas" {
+			depends !w0t1
+			effort 39d
+			allocate t1dev1, t1dev2
+		}
+	}
+
+  task wp1 "User Interface" {
+		priority 1000
+		depends !wp0
+    task w1t1 "UI/UX Design" {
+			effort 36d
+			responsible dboss
+			allocate t1dev1, t1dev2
+		}
+    task w1t2 "User Management" {
+			depends !w1t1
+			effort 15d
+			allocate t1dev1
+		}
+		task w1t3 "Wellness Indicator Dashboard" {
+			depends !w1t1
+			effort 15d
+			allocate t1dev2
+		}
+		task w1t4 "Interactive Engaging Prompts and Quotes" {
+			depends !w1t1
+			effort 25d
+			allocate t1dev1
+		}
+		task w1t5 "Payment Processing" {
+			depends !w1t1
+			effort 10d
+			allocate t1dev2
+		}
+		task w1t7 "AI Avatar Integration" {
+			depends !w1t1
+			effort 10d
+			allocate t1dev2
+		}
+		task w1t9 "About Us" {
+			depends !w1t1
+			effort 5d
+			allocate t1dev2
+		}
+  }
+  
+	task wp2 "Backend/Microservices Architectures" {
+		priority 1000
+    task w2t1 "User Profile Database" {
+			depends !!wp1.w1t1
+			effort 15d
+			allocate t1dev2
+		}
+    task w2t2 "Wellness Monitoring Db and Prompts" {
+			depends !!wp1.w1t1
+			effort 20d
+			allocate t1dev1
+		}
+		task w2t3 "Exercises/Quotes Database" {
+			depends !!wp1.w1t1
+			effort 30d
+			allocate t1dev2
+		}
+		task w2t4 "Subscription/Payment Databases" {
+			depends !!wp1.w1t1
+			effort 15d
+			allocate t1dev1
+		}
+		task w2t5 "Progress Databases" {
+			depends !!wp1.w1t1
+			effort 15d
+			allocate t1dev2
+		}
+		task w2t6 "Security ACL" {
+			depends !!wp1.w1t1
+			effort 5d
+			allocate t1dev1
+		}
+		task w2t9 "MicroServices Architecture" {
+			effort 69d
+			allocate t2dev1, t2dev2
+		}
+  }
+	task wp4 "Security and Privacy" {
+		depends !wp2
+		task w4t1 "User Management" {
+			depends !!wp2.w2t1, !!wp1.w1t2
+			effort 9d
+			allocate t1dev1, t1dev2
+		}
+		task w4t2 "Payment Processing" {
+			depends !!wp2.w2t4, !!wp1.w1t5
+			effort 6d
+			allocate t1dev1, t1dev2
+		}
+		task w4t4 "Security ACL" {
+			depends !w4t1
+			effort 6d
+			allocate t1dev1, t1dev2
+		}
+	}	
+	task wp5 "Camera Feed Analysis" {
+		task w5t1 "Camera Position Estimation" {
+			priority 1000
+			depends !!wp2.w2t9
+			effort 10d
+			allocate t2dev1, t2dev2
+		}
+		task w5t2 "Exercise Tracking" {
+			priority 1000
+			depends !w5t1
+			effort 10d
+			allocate t2dev1, t2dev2
+		}
+		task w5t3 "Integration Avatar Agent" {
+			priority 1000
+			depends !w5t2
+			effort 20d
+			allocate t2dev1, t2dev2
+		}
+	}
+	task wp6 "AI" {
+		task w6t1 "Wellness Dashboard Analytics" {
+			depends !!wp1.w1t3, !!wp2.w2t2
+			priority 1000
+			effort 30d
+			allocate t2dev1, t2dev2
+		}
+		task w6t2 "Exercise Tracking" {
+			depends !!wp5.w5t2
+			priority 1000
+			effort 10d
+			allocate t2dev1, t2dev2
+		}
+		task w6t3 "AI Avatar (ROEL) Agent" {
+			depends !!wp2.w2t9
+			priority 1000
+			effort 40d
+			allocate t2dev1, t2dev2
+		}
+		task w6t4 "Interactive Prompting for User Input" {
+			depends !!wp1.w1t4
+			priority 1000
+			effort 10d
+			allocate t2dev1, t2dev2
+		}
+	}
+	task wp7 "Text to Speech TTS" {
+		task w7t1 "Speech Generator" {
+			depends !!wp2.w2t9
+			effort 10d
+			allocate t2dev1, t2dev2
+		}
+		task w7t2 "AI Avatar (ROEL) Agent Integration" {
+			depends !w7t1, !!wp6.w6t3
+			effort 20d
+			allocate t2dev1, t2dev2
+		}
+	}
+	task wp8 "Natural Language Processing" {
+		task w8t1 "Text Generator" {
+			depends !!wp2.w2t9
+			effort 10d
+			allocate t2dev1, t2dev2
+		}
+		task w8t2 "AI Avatar (ROEL) Agent Integration" {
+			depends !!wp7.w7t1, !!wp6.w6t3
+			effort 30d
+			allocate t2dev1, t2dev2
+		}
+	}
+	task wp9 "Avatar Video Generation" {
+		task w9t1 "Video Generator" {
+			depends !!wp2.w2t9
+			effort 10d
+			allocate t2dev1, t2dev2
+		}
+		task w9t2 "Alignment to Audio" {
+			depends !!wp7, !!wp8
+			effort 10d
+			allocate t2dev1, t2dev2
+		}
+		task w9t3 "AI Avatar (ROEL) Agent Integration" {
+			depends !!wp8.w8t2
+			effort 20d
+			allocate t2dev1, t2dev2
+		}
+	}
+	task wp10 "Payment System" {
+		task w10t1 "Payment Gateway Configuration" {
+			depends !!wp1.w1t5, !!wp2.w2t4
+			effort 6d
+			allocate t1dev1, t1dev2
+		}
+		task w10t2 "Subscription Purchase" {
+			depends !w10t1
+			effort 12d
+			allocate t1dev1, t1dev2
+		}
+	}
+	task wp11 "Testing" {
+		depends !wp1, !wp2, !wp5, !wp6, !wp9, !wp10
+		effort 46d
+		allocate t1dev1, t1dev2
+	}
+
+  task deliveries "Deployment" {
+		purge chargeset
+		chargeset rev
+
+    task "WP0" 			{ 
+			depends !!wp0
+			charge 1000 onstart 
+		}
+    task "WP1" 			{ 
+			depends !!wp1
+			charge 1000 onstart 
+		}
+    task "WP2"  { 
+			depends !!wp2
+			charge 1000 onstart 
+		}
+		task "WP4"  { 
+			depends !!wp4
+			charge 1000 onstart 
+		}
+		task "WP5"  { 
+			depends !!wp5
+			charge 1000 onstart 
+		}
+		task "WP6"  { 
+			depends !!wp6
+			charge 1000 onstart 
+		}
+		task "WP7"  { 
+			depends !!wp7
+			charge 1000 onstart 
+		}
+		task "WP8"  { 
+			depends !!wp8
+			charge 1000 onstart 
+		}
+		task "WP9"  { 
+			depends !!wp9
+			charge 1000 onstart 
+		}
+		task "WP10"  { 
+			depends !!wp10
+			charge 1000 onstart 
+		}
+		task "WP11"  { 
+			depends !!wp11
+			charge 1000 onstart 
+		}
+  }
+}
+
+# Now the project has been specified completely. Stopping here would
+# result in a valid TaskJuggler file that could be processed and
+# scheduled. Here reports will be generated to visualize the
+# results.
+
+navigator navbar {
+  hidereport 0
+}
+
+macro TaskTip [
+  tooltip istask() -8<-
+    '''Start: ''' <-query attribute='start'->
+    '''End: ''' <-query attribute='end'->
+    ----
+    '''Resources:'''
+
+    <-query attribute='resources'->
+    ----
+    '''Precursors: '''
+
+    <-query attribute='precursors'->
+    ----
+    '''Followers: '''
+
+    <-query attribute='followers'->
+    ->8-
+]
+
+textreport frame "" {
+  header -8<-
+    == TaskJuggler Project Template ==
+    <[navigator id="navbar"]>
+  ->8-
+  footer "----"
+  textreport index "Overview" {
+    formats html
+    center '<[report id="overview"]>'
+  }
+
+  textreport "Status" {
+    formats html
+    center -8<-
+      <[report id="status.dashboard"]>
+      ----
+      <[report id="status.completed"]>
+      ----
+      <[report id="status.ongoing"]>
+      ----
+      <[report id="status.future"]>
+    ->8-
+  }
+
+  textreport wps "Work packages" {
+		textreport wp0 "Work package 0" {
+      formats html
+      center '<[report id="wp0"]>'
+    }
+    textreport wp1 "Work package 1" {
+      formats html
+      center '<[report id="wp1"]>'
+    }
+    textreport wp2 "Work package 2" {
+      formats html
+      center '<[report id="wp2"]>'
+    }
+		textreport wp4 "Work package 4" {
+      formats html
+      center '<[report id="wp4"]>'
+    }
+		textreport wp5 "Work package 5" {
+      formats html
+      center '<[report id="wp5"]>'
+    }
+		textreport wp6 "Work package 6" {
+      formats html
+      center '<[report id="wp6"]>'
+    }
+		textreport wp7 "Work package 7" {
+      formats html
+      center '<[report id="wp7"]>'
+    }
+		textreport wp8 "Work package 8" {
+      formats html
+      center '<[report id="wp8"]>'
+    }
+		textreport wp9 "Work package 9" {
+      formats html
+      center '<[report id="wp9"]>'
+    }
+		textreport wp10 "Work package 10" {
+      formats html
+      center '<[report id="wp10"]>'
+    }
+  }
+
+  textreport "Deliveries" {
+    formats html
+    center '<[report id="deliveries"]>'
+  }
+
+  textreport "ContactList" {
+    formats html
+    title "Contact List"
+    center '<[report id="contactList"]>'
+  }
+  textreport "ResourceGraph" {
+    formats html
+    title "Resource Graph"
+    center '<[report id="resourceGraph"]>'
+  }
+}
+
+# A traditional Gantt chart with a project overview.
+taskreport overview "" {
+  header -8<-
+    === Project Overview ===
+
+    The project is structured into 2 work packages.
+
+    # Specification
+    # <-reportlink id='frame.wps.wp1'->
+    # <-reportlink id='frame.wps.wp2'->
+    # Testing
+
+    === Original Project Plan ===
+  ->8-
+  columns bsi { title 'WBS' },
+          name, start, end, effort, cost,
+          revenue, chart { ${TaskTip} scale month width 900 }
+  # For this report we like to have the abbreviated weekday in front
+  # of the date. %a is the tag for this.
+  timeformat "%Y-%m-%d"
+  loadunit days
+  hideresource 1
+  balance cost rev
+  caption 'All effort values are in man days.'
+
+  footer -8<-
+    === Staffing ===
+
+    All project phases are properly staffed. See [[ResourceGraph]] for
+    detailed resource allocations.
+
+    === Current Status ===
+
+    Some blurb about the current situation.
+  ->8-
+}
+
+# Macro to set the background color of a cell according to the alert
+# level of the task.
+macro AlertColor [
+  cellcolor plan.alert = 0 "#90FF90" # green
+  cellcolor plan.alert = 1 "#FFFF90" # yellow
+  cellcolor plan.alert = 2 "#FF9090" # red
+]
+
+taskreport status "" {
+  columns bsi { width 50 title 'WBS' }, name { width 150 },
+          start { width 100 }, end { width 100 },
+          effort { width 100 },
+          alert { tooltip plan.journal
+                          != '' "<-query attribute='journal'->" width 150 },
+          status { width 150 }
+
+  taskreport dashboard "" {
+    headline "Project Dashboard (<-query attribute='now'->)"
+    columns name { title "Task" ${AlertColor} width 200},
+            resources { width 200 ${AlertColor}
+                        listtype bullets
+                        listitem "<-query attribute='name'->"
+                        start ${projectstart} end ${projectend} },
+            alerttrend { title "Trend" ${AlertColor} width 50 },
+            journal { width 350 ${AlertColor} }
+    journalmode status_up
+    journalattributes headline, author, date, summary, details
+    hidetask ~hasalert(0)
+    sorttasks alert.down, plan.end.up
+    period %{${now} - 1w} +1w
+  }
+  taskreport completed "" {
+    headline "Already completed tasks"
+    hidetask ~(plan.end <= ${now})
+  }
+  taskreport ongoing "" {
+    headline "Ongoing tasks"
+    hidetask ~((plan.start <= ${now}) & (plan.end > ${now}))
+  }
+  taskreport future "" {
+    headline "Future tasks"
+    hidetask ~(plan.start > ${now})
+  }
+}
+
+# A list of tasks showing the resources assigned to each task.
+taskreport wp0 "" {
+  headline "Work package 0 - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${TaskTip} scale day width 1150 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot project.wp0
+}
+taskreport wp1 "" {
+  headline "Work package 1 - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${TaskTip} scale day width 1150 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot project.wp1
+}
+# A list of tasks showing the resources assigned to each task.
+taskreport wp2 "" {
+  headline "Work package 2 - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${TaskTip} scale day width 1150 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot project.wp2
+}
+# A list of tasks showing the resources assigned to each task.
+taskreport wp4 "" {
+  headline "Work package 4 - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${TaskTip} scale day width 1150 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot project.wp4
+}
+# A list of tasks showing the resources assigned to each task.
+taskreport wp5 "" {
+  headline "Work package 5 - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${TaskTip} scale day width 1150 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot project.wp5
+}
+# A list of tasks showing the resources assigned to each task.
+taskreport wp6 "" {
+  headline "Work package 6 - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${TaskTip} scale day width 1150 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot project.wp6
+}
+# A list of tasks showing the resources assigned to each task.
+taskreport wp7 "" {
+  headline "Work package 7 - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${TaskTip} scale day width 1150 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot project.wp7
+}
+# A list of tasks showing the resources assigned to each task.
+taskreport wp8 "" {
+  headline "Work package 8 - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${TaskTip} scale day width 1150 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot project.wp8
+}
+# A list of tasks showing the resources assigned to each task.
+taskreport wp9 "" {
+  headline "Work package 9 - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${TaskTip} scale day width 1150 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot project.wp9
+}
+# A list of tasks showing the resources assigned to each task.
+taskreport wp10 "" {
+  headline "Work package 10 - Resource Allocation Report"
+  columns bsi { title 'WBS' }, name, start, end, effort { title "Work" },
+          duration, chart { ${TaskTip} scale day width 1150 }
+  timeformat "%Y-%m-%d"
+  hideresource ~(isleaf() & isleaf_())
+  sortresources name.up
+  taskroot project.wp10
+}
+
+# A list of all tasks with the percentage completed for each task
+taskreport deliveries "" {
+  headline "Project Deliverables"
+  columns bsi { title 'WBS' }, name, start, end, note { width 150 }, complete,
+          chart { ${TaskTip} }
+  taskroot project.deliveries
+  hideresource 1
+}
+# A list of all employees with their contact details.
+resourcereport contactList "" {
+  headline "Contact list and duty plan"
+  columns name,
+          email { celltext 1 "[mailto:<-email-> <-email->]" },
+          managers { title "Manager" },
+          chart { scale day }
+  hideresource ~isleaf()
+  sortresources name.up
+  hidetask 1
+}
+
+# A graph showing resource allocation. It identifies whether each
+# resource is under- or over-allocated for.
+resourcereport resourceGraph "" {
+  headline "Resource Allocation Graph"
+  columns no, name, effort, rate, monthly { ${TaskTip} width 800 }
+  loadunit shortauto
+  # We only like to show leaf tasks for leaf resources.
+  hidetask ~(isleaf() & isleaf_())
+  sorttasks plan.start.up
+}
+
